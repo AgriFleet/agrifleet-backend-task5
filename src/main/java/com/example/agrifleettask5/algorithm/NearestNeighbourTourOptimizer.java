@@ -1,5 +1,6 @@
 package com.example.agrifleettask5.algorithm;
 
+import com.example.agrifleettask5.model.TourSolution;
 import org.springframework.stereotype.Component;
 
 /** Deterministic polynomial-time fallback for large assigned farm sets. */
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class NearestNeighbourTourOptimizer {
 
     public TourSolution optimize(double[][] distances, boolean returnToDepot) {
+        long startedAt = System.nanoTime();
         int farmCount = distances.length - 1;
         int[] order = new int[farmCount];
         boolean[] visited = new boolean[farmCount];
@@ -33,7 +35,8 @@ public class NearestNeighbourTourOptimizer {
             totalDistance += distances[currentMatrixIndex][0];
         }
 
+        long elapsed = System.nanoTime() - startedAt;
         return new TourSolution(order, totalDistance, "NEAREST_NEIGHBOUR", false,
-                "O(n^2)", "O(n)");
+                "O(n^2)", "O(n)", elapsed);
     }
 }
