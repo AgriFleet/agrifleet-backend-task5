@@ -1,7 +1,7 @@
 package com.example.agrifleettask5.ag18.algorithm;
 
 import com.example.agrifleettask5.algorithm.HeldKarpTourOptimizer;
-import com.example.agrifleettask5.algorithm.TourSolution;
+import com.example.agrifleettask5.model.TourSolution;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
