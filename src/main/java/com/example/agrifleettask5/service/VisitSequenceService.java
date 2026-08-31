@@ -1,12 +1,12 @@
-package com.example.agrifleettask5.ag18.service;
+package com.example.agrifleettask5.service;
 
-import com.example.agrifleettask5.ag18.algorithm.HeldKarpTourOptimizer;
-import com.example.agrifleettask5.ag18.algorithm.NearestNeighbourTourOptimizer;
-import com.example.agrifleettask5.ag18.algorithm.TourSolution;
-import com.example.agrifleettask5.ag18.model.FarmLocation;
-import com.example.agrifleettask5.ag18.model.OptimizeSequenceRequest;
-import com.example.agrifleettask5.ag18.model.OptimizeSequenceResponse;
-import com.example.agrifleettask5.ag18.model.RouteLeg;
+import com.example.agrifleettask5.algorithm.HeldKarpTourOptimizer;
+import com.example.agrifleettask5.algorithm.NearestNeighbourTourOptimizer;
+import com.example.agrifleettask5.algorithm.TourSolution;
+import com.example.agrifleettask5.model.FarmLocation;
+import com.example.agrifleettask5.model.OptimizeSequenceRequest;
+import com.example.agrifleettask5.model.OptimizeSequenceResponse;
+import com.example.agrifleettask5.model.RouteLeg;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
