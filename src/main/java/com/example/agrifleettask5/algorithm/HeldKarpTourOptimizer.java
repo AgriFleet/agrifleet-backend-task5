@@ -1,5 +1,6 @@
 package com.example.agrifleettask5.algorithm;
 
+import com.example.agrifleettask5.model.TourSolution;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -9,10 +10,12 @@ import java.util.Arrays;
 public class HeldKarpTourOptimizer {
 
     public TourSolution optimize(double[][] distances, boolean returnToDepot) {
+        long startedAt = System.nanoTime();
         int farmCount = distances.length - 1;
         if (farmCount == 0) {
+            long elapsed = System.nanoTime() - startedAt;
             return new TourSolution(new int[0], 0.0, "HELD_KARP_DP", true,
-                    "O(n^2 * 2^n)", "O(n * 2^n)");
+                    "O(n^2 * 2^n)", "O(n * 2^n)", elapsed);
         }
 
         int stateCount = 1 << farmCount;
@@ -74,7 +77,8 @@ public class HeldKarpTourOptimizer {
             current = previous;
         }
 
+        long elapsed = System.nanoTime() - startedAt;
         return new TourSolution(order, bestDistance, "HELD_KARP_DP", true,
-                "O(n^2 * 2^n)", "O(n * 2^n)");
+                "O(n^2 * 2^n)", "O(n * 2^n)", elapsed);
     }
 }

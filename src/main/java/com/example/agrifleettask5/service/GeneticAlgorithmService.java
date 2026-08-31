@@ -1,11 +1,10 @@
 package com.example.agrifleettask5.service;
 
-import com.example.agrifleettask5.algorithm.HeldKarpTourOptimizer;
-import com.example.agrifleettask5.algorithm.NearestNeighbourTourOptimizer;
+import com.example.agrifleettask5.algorithm.GeneticAlgorithmTourOptimizer;
 import com.example.agrifleettask5.model.TourSolution;
 import com.example.agrifleettask5.model.FarmLocation;
-import com.example.agrifleettask5.model.OptimizeSequenceRequest;
-import com.example.agrifleettask5.model.OptimizeSequenceResponse;
+import com.example.agrifleettask5.model.GeneticAlgorithmRequest;
+import com.example.agrifleettask5.model.GeneticAlgorithmResponse;
 import com.example.agrifleettask5.model.RouteLeg;
 import org.springframework.stereotype.Service;
 
@@ -14,34 +13,47 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * AG-20: Genetic Algorithm-based tour optimization service.
+ * Optimizes visit sequences for large farm sets using evolutionary algorithms.
+ * Suitable for medium to large instances where exact algorithms are impractical.
+ */
 @Service
-public class VisitSequenceService {
-    static final int EXACT_ALGORITHM_MAX_FARMS = 18;
+public class GeneticAlgorithmService {
     private static final double EARTH_RADIUS_KM = 6371.0088;
+    private static final int DEFAULT_POPULATION_SIZE = 100;
+    private static final int DEFAULT_GENERATIONS = 200;
+    private static final double DEFAULT_MUTATION_RATE = 0.02;
 
-    private final HeldKarpTourOptimizer heldKarp;
-    private final NearestNeighbourTourOptimizer nearestNeighbour;
+    private final GeneticAlgorithmTourOptimizer geneticAlgorithmOptimizer;
 
-    public VisitSequenceService(HeldKarpTourOptimizer heldKarp,
-                                NearestNeighbourTourOptimizer nearestNeighbour) {
-        this.heldKarp = heldKarp;
-        this.nearestNeighbour = nearestNeighbour;
+    public GeneticAlgorithmService(GeneticAlgorithmTourOptimizer geneticAlgorithmOptimizer) {
+        this.geneticAlgorithmOptimizer = geneticAlgorithmOptimizer;
     }
 
-    public OptimizeSequenceResponse optimize(OptimizeSequenceRequest request) {
+    public GeneticAlgorithmResponse optimize(GeneticAlgorithmRequest request) {
         validate(request);
+
         boolean returnToDepot = request.returnToDepot() == null || request.returnToDepot();
         double fuelRate = request.fuelConsumptionLitresPerKm() == null
                 ? 0.0 : request.fuelConsumptionLitresPerKm();
+
+        int populationSize = request.populationSize() == null || request.populationSize() <= 0
+                ? DEFAULT_POPULATION_SIZE : request.populationSize();
+        int generations = request.generations() == null || request.generations() <= 0
+                ? DEFAULT_GENERATIONS : request.generations();
+        double mutationRate = request.mutationRate() == null || request.mutationRate() < 0 || request.mutationRate() > 1.0
+                ? DEFAULT_MUTATION_RATE : request.mutationRate();
+
         double[][] matrix = request.distanceMatrix() == null
                 ? buildHaversineMatrix(request.depot(), request.farms())
                 : copyMatrix(request.distanceMatrix());
 
-        long startedAt = System.nanoTime();
-        TourSolution solution = request.farms().size() <= EXACT_ALGORITHM_MAX_FARMS
-                ? heldKarp.optimize(matrix, returnToDepot)
-                : nearestNeighbour.optimize(matrix, returnToDepot);
+        // Run genetic algorithm
+        TourSolution solution = geneticAlgorithmOptimizer.optimize(matrix, returnToDepot,
+                populationSize, generations, mutationRate);
 
+        // Build visit sequence from tour
         List<FarmLocation> sequence = new ArrayList<>();
         sequence.add(request.depot());
         for (int farmIndex : solution.farmOrder()) {
@@ -51,28 +63,31 @@ public class VisitSequenceService {
             sequence.add(request.depot());
         }
 
+        // Build route legs
         List<RouteLeg> legs = buildLegs(sequence, request, matrix);
-        return new OptimizeSequenceResponse(
+
+        return new GeneticAlgorithmResponse(
                 List.copyOf(sequence),
                 legs,
                 round(solution.totalDistance()),
                 round(solution.totalDistance() * fuelRate),
                 solution.algorithm(),
-                solution.optimalityGuaranteed(),
                 solution.timeComplexity(),
                 solution.spaceComplexity(),
                 solution.elapsedNanoseconds()
         );
     }
 
-    private void validate(OptimizeSequenceRequest request) {
+    private void validate(GeneticAlgorithmRequest request) {
         if (request == null || request.depot() == null) {
             throw new IllegalArgumentException("depot is required");
         }
         validateLocation(request.depot(), "depot");
+
         if (request.farms() == null) {
             throw new IllegalArgumentException("farms is required");
         }
+
         Set<Long> ids = new HashSet<>();
         ids.add(request.depot().id());
         for (int i = 0; i < request.farms().size(); i++) {
@@ -85,13 +100,27 @@ public class VisitSequenceService {
                 throw new IllegalArgumentException("location IDs must be unique");
             }
         }
+
         if (request.fuelConsumptionLitresPerKm() != null
                 && (!Double.isFinite(request.fuelConsumptionLitresPerKm())
                 || request.fuelConsumptionLitresPerKm() < 0)) {
             throw new IllegalArgumentException("fuelConsumptionLitresPerKm must be finite and non-negative");
         }
+
         if (request.distanceMatrix() != null) {
             validateMatrix(request.distanceMatrix(), request.farms().size() + 1);
+        }
+
+        if (request.populationSize() != null && (request.populationSize() < 10 || request.populationSize() > 10000)) {
+            throw new IllegalArgumentException("populationSize must be between 10 and 10000");
+        }
+
+        if (request.generations() != null && (request.generations() < 10 || request.generations() > 5000)) {
+            throw new IllegalArgumentException("generations must be between 10 and 5000");
+        }
+
+        if (request.mutationRate() != null && (request.mutationRate() < 0.0 || request.mutationRate() > 1.0)) {
+            throw new IllegalArgumentException("mutationRate must be between 0.0 and 1.0");
         }
     }
 
@@ -153,9 +182,7 @@ public class VisitSequenceService {
         return EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
-    private List<RouteLeg> buildLegs(List<FarmLocation> sequence,
-                                     OptimizeSequenceRequest request,
-                                     double[][] matrix) {
+    private List<RouteLeg> buildLegs(List<FarmLocation> sequence, GeneticAlgorithmRequest request, double[][] matrix) {
         List<RouteLeg> legs = new ArrayList<>();
         for (int i = 0; i + 1 < sequence.size(); i++) {
             FarmLocation from = sequence.get(i);
@@ -167,7 +194,7 @@ public class VisitSequenceService {
         return List.copyOf(legs);
     }
 
-    private int matrixIndex(long locationId, OptimizeSequenceRequest request) {
+    private int matrixIndex(long locationId, GeneticAlgorithmRequest request) {
         if (locationId == request.depot().id()) {
             return 0;
         }
