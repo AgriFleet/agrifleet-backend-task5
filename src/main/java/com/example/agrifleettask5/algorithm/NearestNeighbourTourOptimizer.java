@@ -1,4 +1,4 @@
-package com.example.agrifleettask5.ag18.algorithm;
+package com.example.agrifleettask5.algorithm;
 
 import org.springframework.stereotype.Component;
 

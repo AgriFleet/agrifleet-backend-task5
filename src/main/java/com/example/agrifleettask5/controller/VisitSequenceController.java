@@ -1,8 +1,8 @@
-package com.example.agrifleettask5.ag18.controller;
+package com.example.agrifleettask5.controller;
 
-import com.example.agrifleettask5.ag18.model.OptimizeSequenceRequest;
-import com.example.agrifleettask5.ag18.model.OptimizeSequenceResponse;
-import com.example.agrifleettask5.ag18.service.VisitSequenceService;
+import com.example.agrifleettask5.model.OptimizeSequenceRequest;
+import com.example.agrifleettask5.model.OptimizeSequenceResponse;
+import com.example.agrifleettask5.service.VisitSequenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

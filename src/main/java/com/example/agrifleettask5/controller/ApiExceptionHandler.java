@@ -1,4 +1,4 @@
-package com.example.agrifleettask5.ag18.controller;
+package com.example.agrifleettask5.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
