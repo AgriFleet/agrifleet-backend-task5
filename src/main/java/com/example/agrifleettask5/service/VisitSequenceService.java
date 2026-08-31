@@ -2,7 +2,7 @@ package com.example.agrifleettask5.service;
 
 import com.example.agrifleettask5.algorithm.HeldKarpTourOptimizer;
 import com.example.agrifleettask5.algorithm.NearestNeighbourTourOptimizer;
-import com.example.agrifleettask5.algorithm.TourSolution;
+import com.example.agrifleettask5.model.TourSolution;
 import com.example.agrifleettask5.model.FarmLocation;
 import com.example.agrifleettask5.model.OptimizeSequenceRequest;
 import com.example.agrifleettask5.model.OptimizeSequenceResponse;
@@ -41,7 +41,6 @@ public class VisitSequenceService {
         TourSolution solution = request.farms().size() <= EXACT_ALGORITHM_MAX_FARMS
                 ? heldKarp.optimize(matrix, returnToDepot)
                 : nearestNeighbour.optimize(matrix, returnToDepot);
-        long elapsed = System.nanoTime() - startedAt;
 
         List<FarmLocation> sequence = new ArrayList<>();
         sequence.add(request.depot());
@@ -62,7 +61,7 @@ public class VisitSequenceService {
                 solution.optimalityGuaranteed(),
                 solution.timeComplexity(),
                 solution.spaceComplexity(),
-                elapsed
+                solution.elapsedNanoseconds()
         );
     }
 
