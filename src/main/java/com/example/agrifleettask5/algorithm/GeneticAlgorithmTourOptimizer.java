@@ -8,20 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Genetic Algorithm-based tour optimizer for AG-20.
- * Optimizes large-scale TSP instances using evolutionary principles:
- * population-based search, crossover, mutation, and fitness selection.
- *
- * Complexity:
- * - Time: O(generations * populationSize * n^2) — typically O(n^2) to O(n^3) in practice
- * - Space: O(populationSize * n)
- *
- * Performance characteristics:
- * - Suitable for n > 18 (where Held-Karp becomes impractical)
- * - Produces near-optimal solutions quickly
- * - Configurable for speed vs quality trade-off
- */
+
 @Component
 public class GeneticAlgorithmTourOptimizer {
     private static final Random random = new Random();

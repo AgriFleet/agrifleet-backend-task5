@@ -13,11 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * AG-20: Genetic Algorithm-based tour optimization service.
- * Optimizes visit sequences for large farm sets using evolutionary algorithms.
- * Suitable for medium to large instances where exact algorithms are impractical.
- */
+
 @Service
 public class GeneticAlgorithmService {
     private static final double EARTH_RADIUS_KM = 6371.0088;
