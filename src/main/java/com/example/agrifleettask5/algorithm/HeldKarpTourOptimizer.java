@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-/** Exact TSP path/cycle solver. Matrix index 0 is the fixed depot. */
+
 @Component
 public class HeldKarpTourOptimizer {
 
