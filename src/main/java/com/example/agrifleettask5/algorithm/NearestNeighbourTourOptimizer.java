@@ -3,7 +3,7 @@ package com.example.agrifleettask5.algorithm;
 import com.example.agrifleettask5.model.TourSolution;
 import org.springframework.stereotype.Component;
 
-/** Deterministic polynomial-time fallback for large assigned farm sets. */
+
 @Component
 public class NearestNeighbourTourOptimizer {
 

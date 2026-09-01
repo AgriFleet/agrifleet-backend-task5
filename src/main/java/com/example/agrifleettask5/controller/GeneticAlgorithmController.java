@@ -11,12 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * AG-20: Genetic Algorithm tour optimization controller.
- * Provides REST endpoint for optimizing visit sequences using genetic
- * algorithm.
- * Suitable for large farm sets where exact algorithms are impractical.
- */
 @RestController
 @CrossOrigin(origins = { "http://localhost:3000", "http://127.0.0.1:3000" }, allowedHeaders = "*", methods = {
         org.springframework.web.bind.annotation.RequestMethod.GET,
@@ -32,14 +26,7 @@ public class GeneticAlgorithmController {
         this.geneticAlgorithmService = geneticAlgorithmService;
     }
 
-    /**
-     * Optimize tour sequence using genetic algorithm.
-     * AG-20: Genetic Algorithm optimization for large-scale TSP instances.
-     *
-     * @param request the optimization request with depot, farms, and optional GA
-     *                parameters
-     * @return optimized tour sequence with distance and fuel estimates
-     */
+
     @PostMapping("/optimize-genetic-algorithm")
     public ResponseEntity<GeneticAlgorithmResponse> optimizeUsingGeneticAlgorithm(
             @RequestBody GeneticAlgorithmRequest request) {
